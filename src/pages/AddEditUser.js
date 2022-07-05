@@ -1,3 +1,4 @@
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button, Form, Grid, Loader } from "semantic-ui-react";
@@ -16,6 +17,43 @@ const AddEditUser = () => {
   const [progress, setProgress] = useState(null);
   const [errors, setErrors] = useState({});
   const [isSubmit, setIsSubmit] = useState(false);
+
+  useEffect(() => {
+    const uploadFile = () => {
+      const name = new Date().getTime() + file.name;
+      const storageRef = ref(storage, file.name);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setProgress(progress);
+
+          switch (snapshot.state) {
+            case "paused":
+              console.log("Upload is Paused");
+              break;
+            case "running":
+              console.log("Upload is Running");
+              break;
+            default:
+              break;
+          }
+        },
+        (error) => {
+          console.log(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            setData((prev) => ({ ...prev, img: downloadURL }));
+          });
+        }
+      );
+    };
+
+    file && uploadFile();
+  }, [file]);
 
   const handleChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
@@ -62,7 +100,7 @@ const AddEditUser = () => {
                     <Form.Input
                       label="Name"
                       error={errors.name ? { content: errors.name } : null}
-                      placeHolder="Enter Name"
+                      placeholder="Enter Name"
                       name="name"
                       onChange={handleChange}
                       value={name}
@@ -72,7 +110,7 @@ const AddEditUser = () => {
                       type="email"
                       label="Email"
                       error={errors.email ? { content: errors.email } : null}
-                      placeHolder="Enter Email"
+                      placeholder="Enter Email"
                       name="email"
                       onChange={handleChange}
                       value={email}
@@ -80,7 +118,7 @@ const AddEditUser = () => {
                     <Form.TextArea
                       label="Info"
                       error={errors.info ? { content: errors.info } : null}
-                      placeHolder="Enter Info"
+                      placeholder="Enter Info"
                       name="info"
                       onChange={handleChange}
                       value={info}
@@ -88,7 +126,7 @@ const AddEditUser = () => {
                     <Form.Input
                       label="Contact"
                       error={errors.contact ? { content: errors.contact } : null}
-                      placeHolder="Enter Contact"
+                      placeholder="Enter Contact"
                       name="contact"
                       onChange={handleChange}
                       value={contact}
@@ -98,7 +136,7 @@ const AddEditUser = () => {
                       type="file"
                       onChange={(e) => setFile(e.target.files[0])}
                     />
-                    <Button primary type="submit">
+                    <Button primary type="submit" disabled={progress !== null && progress < 100}>
                       Submit
                     </Button>
                   </Form>
