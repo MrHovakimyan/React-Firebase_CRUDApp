@@ -37,7 +37,7 @@ const Home = () => {
           {users &&
             users.map((item) => {
               return (
-                <Grid.Column>
+                <Grid.Column key={item.id}>
                   <Card key={item.id}>
                     <Card.Content>
                       <Image

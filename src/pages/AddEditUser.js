@@ -1,5 +1,5 @@
 import { async } from "@firebase/util";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -20,6 +20,20 @@ const AddEditUser = () => {
   const [errors, setErrors] = useState({});
   const [isSubmit, setIsSubmit] = useState(false);
   const navigate = useNavigate();
+  const { id } = useParams();
+
+  useEffect(() => {
+    id && getSingleUser();
+  }, [id]);
+
+  const getSingleUser = async () => {
+    const docRef = doc(db, "users", id);
+    const snapshot = await getDoc(docRef);
+
+    if (snapshot.exists()) {
+      setData({ ...snapshot.data() });
+    }
+  };
 
   useEffect(() => {
     const uploadFile = () => {
@@ -88,10 +102,26 @@ const AddEditUser = () => {
     }
     setIsSubmit(true);
 
-    await addDoc(collection(db, "users"), {
-      ...data,
-      timestamp: serverTimestamp(),
-    });
+    if (!id) {
+      try {
+        await addDoc(collection(db, "users"), {
+          ...data,
+          timestamp: serverTimestamp(),
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      try {
+        await updateDoc(doc(db, "users", id), {
+          ...data,
+          timestamp: serverTimestamp(),
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     navigate("/");
   };
 
@@ -105,7 +135,7 @@ const AddEditUser = () => {
                 <Loader active inline="centered" size="huge" />
               ) : (
                 <>
-                  <h2>Add User</h2>
+                  <h2>{id ? "Update User" : "Add User"}</h2>
                   <Form onSubmit={handleSubmit}>
                     <Form.Input
                       label="Name"
