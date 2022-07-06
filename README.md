@@ -26,7 +26,7 @@ Features that are planned to develop in the future:
 
 This application was created by use of
 
-- _[React.js <img src="https://ionicframework.com/docs/icons/logo-react-icon.png" width=30px />](https://reactjs.org/)_
+- _[React.js <img src="http://assets.stickpng.com/images/584830f5cef1014c0b5e4aa1.png" width=30px />](https://reactjs.org/)_
 - _[Firebase <img src="https://cdn4.iconfinder.com/data/icons/google-i-o-2016/512/google_firebase-2-512.png" width=30px />](https://firebase.google.com/)_
 - _[Semantic UI React <img src="https://react.semantic-ui.com/logo.png" width=30px />](https://reactjs.org/)_
 
