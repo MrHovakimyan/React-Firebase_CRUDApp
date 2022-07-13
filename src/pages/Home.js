@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
-import { Button, Card, Grid, Container, Image, Modal } from "semantic-ui-react";
-import { collection, deleteDoc, onSnapshot, doc } from "firebase/firestore";
+import { Button, Card, Grid, Container, Image, Input } from "semantic-ui-react";
+import { collection, deleteDoc, onSnapshot, doc, updateDoc } from "firebase/firestore";
 import ModalComp from "../components/ModalComp";
 import Spinner from "../components/Spinner";
 import avatar from "../assets/avatar.jpg";
+import { async } from "@firebase/util";
 
 const Home = () => {
   const [users, setUsers] = useState([]);
@@ -57,9 +58,21 @@ const Home = () => {
     }
   };
 
+  const handleSearch = async (id) => {
+    try {
+      //updateDoc(doc(db, "users", id))
+    } catch (error) {}
+  };
+
   return (
     <Container>
       <h2>Available Users</h2>
+      <Input
+        placeholder="Search..."
+        style={{ margin: "25px" }}
+        action={{ icon: "search" }}
+        onChange={handleSearch}
+      ></Input>
       <Grid columns={4} stackable>
         {users &&
           users.map((item) => {
